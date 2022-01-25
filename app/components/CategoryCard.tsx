@@ -26,9 +26,14 @@ export default function CategoryCard({ category }) {
         <Image src={category.assets[0].url} height={160} alt="Norway" />
       </Card.Section>
 
-      <Text weight={600} size="lg" align="center" mt={"lg"}>
-        {category.name}
-      </Text>
+      <Group direction="column" align="center" spacing={"sm"}>
+        <Text weight={600} size="lg" mt={"lg"}>
+          {category.name}
+        </Text>
+        <Badge color="green" variant="light">
+          {category.products} Products
+        </Badge>
+      </Group>
     </Card>
   );
 }
