@@ -1,5 +1,5 @@
 import {
-  Avatar,
+  Image,
   Badge,
   Box,
   Container,
@@ -22,6 +22,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     const plants = await commerce.products.list({
       category_slug: categorySlug,
     });
+
     return {
       category,
       plants,
@@ -38,29 +39,52 @@ export default function Category() {
     <Container>
       <Box my={"lg"}>
         <Grid>
-          <Grid.Col span={4}>
-            <Avatar
-              style={{ width: "100%", height: "100%" }}
+          <Grid.Col xs={12} md={4}>
+            <Image
+              style={{ width: "100%", height: 300 }}
               src={category.assets[0].url}
               alt={category.name}
             />
           </Grid.Col>
-          <Grid.Col span={8}>
+          <Grid.Col xs={12} md={8}>
             <Group direction="column">
-              <Text>{category.name}</Text>
-              <Text>{category.description}</Text>
-              <Badge variant="filled">{category.products} Products</Badge>
+              <Text weight={600} size="lg">
+                {category.name}
+              </Text>
+              <Text align="justify">{category.description}</Text>
+              <Badge variant="filled" color="green">
+                {category.products} Plants
+              </Badge>
             </Group>
           </Grid.Col>
         </Grid>
       </Box>
       <Divider />
 
-      <SimpleGrid cols={3} my={"lg"}>
-        {plants.data.map((plant) => (
-          <PlantCard plant={plant} />
-        ))}
-      </SimpleGrid>
+      <Box my="xl">
+        <SimpleGrid
+          cols={3}
+          spacing="lg"
+          breakpoints={[
+            { maxWidth: "xl", cols: 3, spacing: "xl" },
+            { maxWidth: "lg", cols: 3, spacing: "lg" },
+            { maxWidth: "md", cols: 3, spacing: "md" },
+            { maxWidth: "sm", cols: 2, spacing: "sm" },
+            { maxWidth: "xs", cols: 1, spacing: "sm" },
+          ]}
+        >
+          {plants.data?.map((plant) => (
+            <PlantCard plant={plant} />
+          ))}
+        </SimpleGrid>
+        {!plants.data && (
+          <Box>
+            <Text size="xl" weight="bolder" align="center">
+              No Plants
+            </Text>
+          </Box>
+        )}
+      </Box>
     </Container>
   );
 }

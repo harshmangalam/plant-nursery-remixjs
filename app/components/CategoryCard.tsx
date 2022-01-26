@@ -23,7 +23,7 @@ export default function CategoryCard({ category }) {
       padding="xl"
     >
       <Card.Section>
-        <Image src={category.assets[0].url} height={160} alt="Norway" />
+        <Image src={category.assets[0].url} height={300} alt={category.name} />
       </Card.Section>
 
       <Group direction="column" align="center" spacing={"sm"}>
@@ -31,7 +31,7 @@ export default function CategoryCard({ category }) {
           {category.name}
         </Text>
         <Badge color="green" variant="light">
-          {category.products} Products
+          {category.products} Plants
         </Badge>
       </Group>
     </Card>

@@ -23,11 +23,11 @@ export default function CategoryCard({ plant }) {
       padding="xl"
     >
       <Card.Section>
-        <Image src={plant.image.url} height={160} alt="Norway" />
+        <Image src={plant.image.url} height={300} alt={plant.name} />
       </Card.Section>
 
       <Group direction="column" align={"center"} spacing={"sm"}>
-        <Text weight={500}>{plant.name}</Text>
+        <Text weight={500} mt="sm" align="center">{plant.name}</Text>
         <Text weight={600}>{plant.price.formatted_with_symbol}</Text>
         {plant.active ? (
           <Badge color="green" variant="light">

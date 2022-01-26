@@ -1,4 +1,4 @@
-import { Container, SimpleGrid } from "@mantine/core";
+import { Box, Container, SimpleGrid, Text } from "@mantine/core";
 import { LoaderFunction, useLoaderData } from "remix";
 import CategoryCard from "~/components/CategoryCard";
 import { commerce } from "~/utils/commerce";
@@ -16,11 +16,33 @@ export default function Categories() {
   console.log(categories);
   return (
     <Container>
-      <SimpleGrid cols={3}>
-        {categories.data.map((category) => (
-          <CategoryCard category={category} />
-        ))}
-      </SimpleGrid>
+      <Text component="h1" size="xl">
+        Categories
+      </Text>
+      <Box my="xl">
+        <SimpleGrid
+          cols={3}
+          spacing="lg"
+          breakpoints={[
+            { maxWidth: "xl", cols: 3, spacing: "xl" },
+            { maxWidth: "lg", cols: 3, spacing: "lg" },
+            { maxWidth: "md", cols: 3, spacing: "md" },
+            { maxWidth: "sm", cols: 2, spacing: "sm" },
+            { maxWidth: "xs", cols: 1, spacing: "sm" },
+          ]}
+        >
+          {categories.data?.map((category) => (
+            <CategoryCard category={category} />
+          ))}
+        </SimpleGrid>
+        {!categories.data && (
+          <Box>
+            <Text size="xl" weight="bolder" align="center">
+              No Categories
+            </Text>
+          </Box>
+        )}
+      </Box>
     </Container>
   );
 }
