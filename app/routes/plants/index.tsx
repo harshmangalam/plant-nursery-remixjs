@@ -1,23 +1,23 @@
 import { Box, Container, SimpleGrid, Text } from "@mantine/core";
 import { LoaderFunction, useLoaderData } from "remix";
-import CategoryCard from "~/components/CategoryCard";
+import PlantCard from "~/components/PlantCard";
 import { commerce } from "~/utils/commerce";
 
 export let loader: LoaderFunction = async () => {
   try {
-    const categories = await commerce.categories.list();
-    return categories;
+    const plants = await commerce.products.list();
+    return plants;
   } catch (error) {
     console.log(error);
   }
 };
 export default function Categories() {
-  const categories = useLoaderData();
-  console.log(categories);
+  const plants = useLoaderData();
+
   return (
-    <Box>
+    <Container>
       <Text component="h1" size="xl">
-        Categories
+        Plants
       </Text>
       <Box my="xl">
         <SimpleGrid
@@ -31,18 +31,18 @@ export default function Categories() {
             { maxWidth: "xs", cols: 1, spacing: "sm" },
           ]}
         >
-          {categories.data?.map((category) => (
-            <CategoryCard category={category} />
+          {plants.data?.map((plant) => (
+            <PlantCard plant={plant} />
           ))}
         </SimpleGrid>
-        {!categories.data && (
+        {!plants.data && (
           <Box>
             <Text size="xl" weight="bolder" align="center">
-              No Categories
+              No Plants
             </Text>
           </Box>
         )}
       </Box>
-    </Box>
+    </Container>
   );
 }

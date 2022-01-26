@@ -2,7 +2,6 @@ import {
   Image,
   Badge,
   Box,
-  Container,
   Divider,
   Grid,
   Group,
@@ -36,9 +35,9 @@ export default function Category() {
   const { category, plants } = useLoaderData();
 
   return (
-    <Container>
+    <Box>
       <Box my={"lg"}>
-        <Grid>
+        <Grid gutter={"xl"}>
           <Grid.Col xs={12} md={4}>
             <Image
               style={{ width: "100%", height: 300 }}
@@ -48,7 +47,7 @@ export default function Category() {
           </Grid.Col>
           <Grid.Col xs={12} md={8}>
             <Group direction="column">
-              <Text weight={600} size="lg">
+              <Text mt="xl" weight={600} size="lg">
                 {category.name}
               </Text>
               <Text align="justify">{category.description}</Text>
@@ -85,6 +84,6 @@ export default function Category() {
           </Box>
         )}
       </Box>
-    </Container>
+    </Box>
   );
 }
