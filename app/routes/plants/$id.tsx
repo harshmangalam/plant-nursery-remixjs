@@ -44,7 +44,6 @@ export const action: ActionFunction = async ({ request }) => {
 };
 export default function Plant() {
   const plant = useLoaderData();
-  const cartData = useActionData();
   const transition = useTransition();
   const [plantImage, setPlantImage] = useState(plant.image.url);
 
@@ -63,6 +62,7 @@ export default function Plant() {
             <Group grow position="center">
               {plant.assets.map((image) => (
                 <ActionIcon
+                  key={image.id}
                   size={"xl"}
                   onClick={() => setPlantImage(image.url)}
                 >

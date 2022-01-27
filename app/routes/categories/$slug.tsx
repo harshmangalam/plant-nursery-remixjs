@@ -73,7 +73,7 @@ export default function Category() {
           ]}
         >
           {plants.data?.map((plant) => (
-            <PlantCard plant={plant} />
+            <PlantCard key={plant.id} plant={plant} />
           ))}
         </SimpleGrid>
         {!plants.data && (

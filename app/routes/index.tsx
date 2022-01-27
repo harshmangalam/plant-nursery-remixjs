@@ -38,7 +38,7 @@ export default function Index() {
           ]}
         >
           {categories.data?.map((category) => (
-            <CategoryCard category={category} />
+            <CategoryCard key={category.id} category={category} />
           ))}
         </SimpleGrid>
         {!categories.data && (
@@ -66,7 +66,7 @@ export default function Index() {
           ]}
         >
           {plants.data?.map((plant) => (
-            <PlantCard plant={plant} />
+            <PlantCard key={plant.id} plant={plant} />
           ))}
         </SimpleGrid>
         {!plants.data && (
