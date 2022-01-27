@@ -1,36 +1,53 @@
 import {
   ActionIcon,
-  Avatar,
   Badge,
   Box,
   Button,
   Grid,
   Group,
   Image,
-  SimpleGrid,
   Text,
   Title,
   TypographyStylesProvider,
 } from "@mantine/core";
 import { useState } from "react";
-import { LoaderFunction, useLoaderData } from "remix";
+import {
+  ActionFunction,
+  Form,
+  LoaderFunction,
+  redirect,
+  useActionData,
+  useLoaderData,
+  useTransition,
+} from "remix";
 import { commerce } from "~/utils/commerce";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const plantId: string = params.id as string;
   try {
     const plant = await commerce.products.retrieve(plantId);
-
     return plant;
   } catch (error) {
     console.log(error);
   }
 };
+
+export const action: ActionFunction = async ({ request }) => {
+  try {
+    const data = await request.formData();
+    await commerce.cart.add(data._fields.plantId[0], 1);
+    return redirect(`/cart`);
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
 export default function Plant() {
   const plant = useLoaderData();
+  const cartData = useActionData();
+  const transition = useTransition();
   const [plantImage, setPlantImage] = useState(plant.image.url);
 
-  console.log(plant);
   return (
     <Box>
       <Grid>
@@ -70,14 +87,22 @@ export default function Plant() {
                 Out Of Stock
               </Badge>
             )}
-
             <TypographyStylesProvider>
               <Box dangerouslySetInnerHTML={{ __html: plant.description }} />
             </TypographyStylesProvider>
 
-            <Button color={"green"} size="lg">
-              Add to Cart
-            </Button>
+            <Form method="post">
+              <input type="hidden" value={plant.id} name="plantId" />
+              <Button
+                loading={transition.state === "submitting"}
+                disabled={transition.state === "submitting"}
+                type="submit"
+                color={"green"}
+                size="lg"
+              >
+                Add to Cart
+              </Button>
+            </Form>
           </Group>
         </Grid.Col>
       </Grid>

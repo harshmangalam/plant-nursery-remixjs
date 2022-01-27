@@ -16,6 +16,7 @@ import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
 import { useState } from "react";
 import { Link } from "remix";
 import MobileMenu from "./MobileMenu";
+import Cart from "./Cart";
 
 export default function Layout({ children }) {
   const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
@@ -88,6 +89,7 @@ export default function Layout({ children }) {
                       <BsFillMoonStarsFill size={"20px"} />
                     )}
                   </ActionIcon>
+                  <Cart />
                   <MobileMenu />
                 </Group>
               </Box>

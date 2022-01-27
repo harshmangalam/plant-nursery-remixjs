@@ -1,4 +1,4 @@
-import { Menu, ActionIcon } from "@mantine/core";
+import { Menu, ActionIcon, MediaQuery } from "@mantine/core";
 import { AiOutlineHome } from "react-icons/ai";
 import { BsCollection } from "react-icons/bs";
 import { RiPlantLine } from "react-icons/ri";
@@ -7,24 +7,26 @@ import { Link } from "remix";
 
 export default function MobileMenu() {
   return (
-    <Menu
-      control={
-        <ActionIcon variant="transparent">
-          <IoApps size={"20px"} />
-        </ActionIcon>
-      }
-    >
-      {menus.map((menu) => (
-        <Menu.Item
-          key={menu.name}
-          component={Link}
-          to={menu.to}
-          icon={menu.icon}
-        >
-          {menu.name}
-        </Menu.Item>
-      ))}
-    </Menu>
+    <MediaQuery largerThan={"xs"} styles={{ display: "none" }}>
+      <Menu
+        control={
+          <ActionIcon variant="transparent">
+            <IoApps size={"20px"} />
+          </ActionIcon>
+        }
+      >
+        {menus.map((menu) => (
+          <Menu.Item
+            key={menu.name}
+            component={Link}
+            to={menu.to}
+            icon={menu.icon}
+          >
+            {menu.name}
+          </Menu.Item>
+        ))}
+      </Menu>
+    </MediaQuery>
   );
 }
 
