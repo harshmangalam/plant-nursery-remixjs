@@ -12,29 +12,66 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { MdPayment } from "react-icons/md";
 import { RiAddFill } from "react-icons/ri";
 import { TiMinus } from "react-icons/ti";
-import { LoaderFunction, useLoaderData } from "remix";
-import { commerce } from "~/utils/commerce";
-
-export const loader: LoaderFunction = async () => {
-  try {
-    const cart = await commerce.cart.retrieve();
-    return cart;
-  } catch (error) {
-    console.log(error);
-  }
-};
 export default function Cart() {
-  const cart = useLoaderData();
-  console.log(cart);
+  const initialCart = {
+    plants: [],
+    totalUniquePlants: 0,
+    totalPlants: 0,
+    totalPrice: {
+      raw: 0,
+      formatted_with_symbol: "₹0.00",
+    },
+  };
+  const [cart, setCart] = useState(initialCart);
+
+  function fetchCart() {
+    const cart = localStorage.cart
+      ? JSON.parse(localStorage.cart)
+      : initialCart;
+    setCart(cart);
+  }
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  function handleCartPlantsQuantity(plantId, type) {
+    const cart = JSON.parse(localStorage.cart);
+    const plant = cart.plants.find((p) => p.id === plantId);
+
+    const newCart = {
+      ...cart,
+    };
+
+    if (type === "add") {
+      plant.quantity += 1;
+      newCart.totalPlants += 1;
+      newCart.totalPrice = {
+        formatted_with_symbol: `₹${cart.totalPrice.raw + plant.price.raw}`,
+        raw: cart.totalPrice.raw + plant.price.raw,
+      };
+      newCart.plants[plant.id] = plant;
+    } else if (type === "sub") {
+      plant.quantity -= 1;
+      newCart.totalPlants -= 1;
+      newCart.totalPrice = {
+        formatted_with_symbol: `₹${cart.totalPrice.raw - plant.price.raw}`,
+        raw: cart.totalPrice.raw - plant.price.raw,
+      };
+    }
+
+    localStorage.setItem("cart", JSON.stringify(newCart));
+    fetchCart();
+  }
   return (
     <Box>
       <Grid>
         <Grid.Col xs={12} md={8}>
-          {cart.line_items.length ? (
+          {cart.plants.length ? (
             <Paper shadow={"sm"}>
               <Table verticalSpacing={"xl"}>
                 <thead>
@@ -46,28 +83,44 @@ export default function Cart() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Plant 1</td>
-                    <td>
-                      <Group spacing={"xs"} align={"center"}>
-                        <ActionIcon variant="outline" color="green" size="sm">
-                          <RiAddFill size={16} />
+                  {cart.plants.map((plant) => (
+                    <tr>
+                      <td>{plant.name}</td>
+                      <td>
+                        <Group spacing={"xs"} align={"center"}>
+                          <ActionIcon
+                            variant="outline"
+                            color="green"
+                            size="sm"
+                            onClick={() =>
+                              handleCartPlantsQuantity(plant.id, "add")
+                            }
+                          >
+                            <RiAddFill size={16} />
+                          </ActionIcon>
+                          <Text align="center" weight={"bold"}>
+                            {plant.quantity}
+                          </Text>
+                          <ActionIcon
+                            variant="outline"
+                            color="green"
+                            size="sm"
+                            onClick={() =>
+                              handleCartPlantsQuantity(plant.id, "sub")
+                            }
+                          >
+                            <TiMinus size={16} />
+                          </ActionIcon>
+                        </Group>
+                      </td>
+                      <td>{plant.price.formatted_with_symbol}</td>
+                      <td>
+                        <ActionIcon variant="filled" color="red">
+                          <AiOutlineDelete size={18} />
                         </ActionIcon>
-                        <Text align="center" weight={"bold"}>
-                          4
-                        </Text>
-                        <ActionIcon variant="outline" color="green" size="sm">
-                          <TiMinus size={16} />
-                        </ActionIcon>
-                      </Group>
-                    </td>
-                    <td>300</td>
-                    <td>
-                      <ActionIcon variant="filled" color="red">
-                        <AiOutlineDelete size={18} />
-                      </ActionIcon>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
             </Paper>
@@ -97,7 +150,7 @@ export default function Cart() {
                 Unique Plants
               </Text>
               <Text weight={600} size="lg">
-                {cart.total_unique_items}
+                {cart.totalUniquePlants}
               </Text>
             </Box>
             <Box
@@ -112,7 +165,7 @@ export default function Cart() {
                 Total Plants
               </Text>
               <Text weight={600} size="lg">
-                {cart.total_items}
+                {cart.totalPlants}
               </Text>
             </Box>
             <Box
@@ -127,13 +180,13 @@ export default function Cart() {
                 Total Cost
               </Text>
               <Text weight={600} size="lg">
-                {cart.subtotal.formatted_with_symbol}
+                {cart.totalPrice.formatted_with_symbol}
               </Text>
             </Box>
 
             <Button
               fullWidth
-              disabled={cart.total_items === 0}
+              disabled={cart.plants.length === 0}
               size="lg"
               color="green"
               leftIcon={<MdPayment size={24} />}

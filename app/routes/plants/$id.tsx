@@ -11,6 +11,7 @@ import {
   TypographyStylesProvider,
 } from "@mantine/core";
 import { useState } from "react";
+import Cookies from "js-cookie";
 import {
   ActionFunction,
   Form,
@@ -32,20 +33,67 @@ export const loader: LoaderFunction = async ({ params }) => {
   }
 };
 
-export const action: ActionFunction = async ({ request }) => {
-  try {
-    const data = await request.formData();
-    await commerce.cart.add(data._fields.plantId[0], 1);
-    return redirect(`/cart`);
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
 export default function Plant() {
   const plant = useLoaderData();
-  const transition = useTransition();
   const [plantImage, setPlantImage] = useState(plant.image.url);
+
+  function handleAddToCart(plant) {
+    plant = {
+      name: plant.name,
+      price: plant.price,
+      id: plant.id,
+      quantity: 1,
+    };
+
+    const initialCart = {
+      plants: [],
+      totalUniquePlants: 0,
+      totalPlants: 0,
+      totalPrice: {
+        raw: 0,
+        formatted_with_symbol: "₹0.00",
+      },
+    };
+    const cart = localStorage.cart
+      ? JSON.parse(localStorage.cart)
+      : initialCart;
+
+    if (cart.plants.length) {
+      const plantIndex = cart.plants.findIndex((p) => p.id === plant.id);
+
+      if (plantIndex > -1) {
+        console.log("plant already in cart");
+        return;
+      } else {
+        localStorage.setItem(
+          "cart",
+          JSON.stringify({
+            ...cart,
+            plants: [...cart.plants, plant],
+            totalPrice: {
+              raw: cart.totalPrice.raw + plant.price.raw,
+              formatted_with_symbol: `₹${
+                cart.totalPrice.raw + plant.price.raw
+              }`,
+            },
+            totalUniquePlants: cart.totalUniquePlants + 1,
+            totalPlants: cart.totalPlants + 1,
+          })
+        );
+      }
+    } else {
+      const cart = {
+        totalPlants: 1,
+        totalUniquePlants: 1,
+        totalPrice: {
+          raw: plant.price.raw,
+          formatted_with_symbol: `₹${plant.price.raw}`,
+        },
+        plants: [plant],
+      };
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }
 
   return (
     <Box>
@@ -73,7 +121,7 @@ export default function Plant() {
           </Group>
         </Grid.Col>
         <Grid.Col xs={12} sm={12} md={6}>
-          <Group direction="column" align={"start"}>
+          <Group direction="column">
             <Title order={3}>{plant.name}</Title>
             <Text weight={600} size="xl">
               {plant.price.formatted_with_symbol}
@@ -91,18 +139,13 @@ export default function Plant() {
               <Box dangerouslySetInnerHTML={{ __html: plant.description }} />
             </TypographyStylesProvider>
 
-            <Form method="post">
-              <input type="hidden" value={plant.id} name="plantId" />
-              <Button
-                loading={transition.state === "submitting"}
-                disabled={transition.state === "submitting"}
-                type="submit"
-                color={"green"}
-                size="lg"
-              >
-                Add to Cart
-              </Button>
-            </Form>
+            <Button
+              color={"green"}
+              size="lg"
+              onClick={() => handleAddToCart(plant)}
+            >
+              Add to Cart
+            </Button>
           </Group>
         </Grid.Col>
       </Grid>

@@ -1,7 +1,25 @@
 import { ActionIcon, Badge } from "@mantine/core";
+import { useEffect, useState } from "react";
 import { IoMdCart } from "react-icons/io";
 import { Link } from "remix";
+
 export default function Cart() {
+  const cart =
+    typeof window !== "undefined"
+      ? localStorage.cart
+        ? JSON.parse(localStorage.cart)
+        : null
+      : null;
+  const [quantity, setQuantity] = useState(0);
+
+  function fetchQuantity() {
+    if (cart) {
+      setQuantity(cart.totalPlants);
+    }
+  }
+  useEffect(() => {
+    fetchQuantity();
+  }, [typeof window !== "undefined" && localStorage.cart]);
   return (
     <ActionIcon
       component={Link}
@@ -19,7 +37,7 @@ export default function Cart() {
         variant="gradient"
         gradient={{ from: "teal", to: "lime", deg: 105 }}
       >
-        3
+        {quantity}
       </Badge>
     </ActionIcon>
   );
